@@ -6,10 +6,15 @@ const Wrapper = styled.div`
   grid-template-columns: repeat(6, 1fr);
   grid-column-gap: 5px;
   grid-row-gap: 5px;
-  max-width: 300px;
+  max-width: 250px;
+  max-height: 217px;
   margin: 0 auto;
 `;
 
+const Caption = styled.p`
+  color: #ccc;
+  font-size: 0.75em;
+`;
 const DayButton = styled.button`
   background: none;
   border: none;
@@ -25,6 +30,7 @@ const DayButton = styled.button`
   &:active,
   &:hover {
     background: #ff7494;
+    color: white;
   }
 `;
 
@@ -44,7 +50,7 @@ class DatePicker extends Component {
     const { onDatePicked } = this.props;
     return (
       <div>
-        <p>Select a day</p>
+        <Caption>Select a day</Caption>
         <Wrapper>
           {days.map(d => (
             <DayButton key={d} onClick={this.pickDate}>

@@ -6,10 +6,16 @@ const Wrapper = styled.div`
   grid-template-columns: repeat(3, 1fr);
   grid-column-gap: 5px;
   grid-row-gap: 5px;
-  max-width: 300px;
-  margin: 0 auto;
+  max-width: 250px;
+  min-height: 167px;
+  max-height: 167px;
+  margin: 25px auto;
 `;
 
+const Caption = styled.p`
+  color: #ccc;
+  font-size: 0.75em;
+`;
 const MonthButton = styled.button`
   background: none;
   border: none;
@@ -23,6 +29,7 @@ const MonthButton = styled.button`
   &:active,
   &:hover {
     background: #ff7494;
+    color: white;
   }
 `;
 
@@ -55,7 +62,7 @@ class DatePicker extends Component {
     const { onMonthPicked } = this.props;
     return (
       <div>
-        <p>Select month</p>
+        <Caption>Select month</Caption>
         <Wrapper>
           {months.map(m => (
             <MonthButton key={m} onClick={this.pickMonth}>

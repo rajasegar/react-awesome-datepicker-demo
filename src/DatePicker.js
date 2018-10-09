@@ -4,6 +4,21 @@ import MonthPicker from "./MonthPicker";
 import YearPicker from "./YearPicker";
 import styled from "styled-components";
 
+const months = [
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December"
+];
+
 const Wrapper = styled.div`
   background: white;
   max-width: 300px;
@@ -14,8 +29,21 @@ const Wrapper = styled.div`
   border: 1px solid #ddd;
 `;
 
-const Picker = styled.div`
+const Trigger = styled.button`
+  border: none;
+  font-weight: bold;
+  font-size: 1em;
+  cursor: pointer;
+  color: #ccc;
+  width: 100%;
+`;
+
+const TriggerWrapper = styled.div`
   padding: 10px;
+`;
+
+const StyledSpan = styled.span`
+  color: ${props => (props.active ? "#ff7494" : "#ccc")};
 `;
 
 const Dropdown = styled.div`
@@ -25,34 +53,30 @@ const Dropdown = styled.div`
 class DatePicker extends Component {
   constructor(props) {
     super(props);
-    let today = new Date();
-    const months = [
-      "January",
-      "February",
-      "March",
-      "April",
-      "May",
-      "June",
-      "July",
-      "August",
-      "September",
-      "October",
-      "November",
-      "December"
-    ];
-
+    //let today = new Date();
     this.state = {
       showDayPicker: false,
       showMonthPicker: false,
       showYearPicker: false,
-      date: today.getDate(),
-      month: months[today.getMonth()],
-      year: today.getFullYear()
+      //date: today.getDate(),
+      //month: today.getMonth() + 1,
+      //year: today.getFullYear()
+      date: "DD",
+      month: "MM",
+      year: "YYYY"
     };
 
+    this.renderDayPicker = this.renderDayPicker.bind(this);
     this.renderMonthPicker = this.renderMonthPicker.bind(this);
     this.renderYearPicker = this.renderYearPicker.bind(this);
     this.onDatePicked = this.onDatePicked.bind(this);
+  }
+
+  renderDayPicker() {
+    this.setState({
+      showDayPicker: true,
+      date: "DD"
+    });
   }
 
   renderMonthPicker(d) {
@@ -60,7 +84,8 @@ class DatePicker extends Component {
     this.setState({
       showDayPicker: false,
       showMonthPicker: true,
-      date: d
+      date: d.toString().padStart(2, "0"),
+      month: "MM"
     });
   }
 
@@ -69,7 +94,8 @@ class DatePicker extends Component {
     this.setState({
       showMonthPicker: false,
       showYearPicker: true,
-      month: m
+      month: (months.indexOf(m) + 1).toString().padStart(2, "0"),
+      year: "YYYY"
     });
   }
 
@@ -92,15 +118,13 @@ class DatePicker extends Component {
     } = this.state;
     return (
       <Wrapper>
-        <Picker>
-          <button
-            onClick={() => {
-              this.setState({ showDayPicker: true });
-            }}
-          >
-            {date}/{month}/{year}
-          </button>
-        </Picker>
+        <TriggerWrapper>
+          <Trigger onClick={this.renderDayPicker}>
+            <StyledSpan active={showDayPicker}>{date}</StyledSpan> /&nbsp;
+            <StyledSpan active={showMonthPicker}>{month}</StyledSpan> /&nbsp;
+            <StyledSpan active={showYearPicker}>{year}</StyledSpan>
+          </Trigger>
+        </TriggerWrapper>
         <Dropdown>
           {showDayPicker && <DayPicker onDatePicked={this.renderMonthPicker} />}
           {showMonthPicker && (

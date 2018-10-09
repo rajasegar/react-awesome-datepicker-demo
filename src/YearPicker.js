@@ -6,10 +6,15 @@ const Wrapper = styled.div`
   grid-template-columns: repeat(5, 1fr);
   grid-column-gap: 5px;
   grid-row-gap: 5px;
-  max-width: 300px;
-  max-height: 300px;
+  max-width: 250px;
+  max-height: 217px;
   overflow-y: auto;
   margin: 0 auto;
+`;
+
+const Caption = styled.p`
+  color: #ccc;
+  font-size: 0.75em;
 `;
 
 const YearButton = styled.button`
@@ -25,6 +30,7 @@ const YearButton = styled.button`
   &:active,
   &:hover {
     background: #ff7494;
+    color: white;
   }
 `;
 
@@ -48,7 +54,7 @@ class DatePicker extends Component {
     const { onYearPicked } = this.props;
     return (
       <div>
-        <p>Select year</p>
+        <Caption>Select year</Caption>
         <Wrapper>
           {years.map(y => (
             <YearButton onClick={this.pickYear} key={y}>
