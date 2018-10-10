@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import styled from "styled-components";
+import transition from "styled-transition-group";
 
 const Wrapper = styled.div`
   display: grid;
@@ -31,12 +32,46 @@ const MonthButton = styled.button`
     background: #ff7494;
     color: white;
   }
+
+  &:disabled {
+    cursor: not-allowed;
+    user-select: none;
+  }
+`;
+
+const Transition = transition.div.attrs({
+  unmountOnExit: true,
+  timeout: 1000
+})`
+&:enter { 
+  transform: translateX(300px);
+  }
+&:enter-active {
+  transform: translateX(0px);
+  transition: transform 400ms ease-in-out;
+}
+&:exit { 
+  transform: translateX(0px);
+  }
+&:exit-active {
+  transform: translateX(300px);
+  transition: transoform 400ms ease-in;
+}
 `;
 
 class DatePicker extends Component {
   constructor(props) {
     super(props);
     this.pickMonth = this.pickMonth.bind(this);
+    this.state = {
+      show: false
+    };
+  }
+
+  componentDidMount() {
+    setTimeout(() => {
+      this.setState({ show: true });
+    });
   }
 
   pickMonth(e) {
@@ -59,18 +94,34 @@ class DatePicker extends Component {
       "December"
     ];
 
-    const { onMonthPicked } = this.props;
+    const monthWith30days = [
+      "February",
+      "April",
+      "June",
+      "September",
+      "November"
+    ];
+
+    const { onMonthPicked, date } = this.props;
+    const { show } = this.state;
     return (
-      <div>
+      <Transition in={show}>
         <Caption>Select month</Caption>
         <Wrapper>
           {months.map(m => (
-            <MonthButton key={m} onClick={this.pickMonth}>
+            <MonthButton
+              key={m}
+              onClick={this.pickMonth}
+              disabled={
+                (date > 30 && monthWith30days.includes(m)) ||
+                (date === "30" && m === "February")
+              }
+            >
               {m}
             </MonthButton>
           ))}
         </Wrapper>
-      </div>
+      </Transition>
     );
   }
 }

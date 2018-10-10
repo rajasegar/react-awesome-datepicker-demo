@@ -1,8 +1,12 @@
 body {
   background: #eee;
+  padding: 2em;
+  text-align:center;
+
 }
 .App {
   text-align: center;
+  min-height: 400px;
 }
 
 .App-logo {

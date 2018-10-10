@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import styled from "styled-components";
+import transition from "styled-transition-group";
 
 const Wrapper = styled.div`
   display: grid;
@@ -34,13 +35,37 @@ const YearButton = styled.button`
   }
 `;
 
+const Transition = transition.div.attrs({
+  unmountOnExit: true,
+  timeout: 1000
+})`
+&:enter { 
+  transform: translateX(300px);
+  }
+&:enter-active {
+  transform: translateX(0px);
+  transition: transform 400ms ease-in-out;
+}
+
+`;
+
 class DatePicker extends Component {
   constructor(props) {
     super(props);
     this.pickYear = this.pickYear.bind(this);
+    this.state = {
+      show: false
+    };
+  }
+
+  componentDidMount() {
+    setTimeout(() => {
+      this.setState({ show: true });
+    });
   }
 
   pickYear(e) {
+    this.setState({ show: false });
     this.props.onYearPicked(e.target.textContent);
   }
 
@@ -52,8 +77,9 @@ class DatePicker extends Component {
     const years = [];
     for (let i = minYear; i < maxYear; i++) years.push(i);
     const { onYearPicked } = this.props;
+    const { show } = this.state;
     return (
-      <div>
+      <Transition in={show}>
         <Caption>Select year</Caption>
         <Wrapper>
           {years.map(y => (
@@ -62,7 +88,7 @@ class DatePicker extends Component {
             </YearButton>
           ))}
         </Wrapper>
-      </div>
+      </Transition>
     );
   }
 }

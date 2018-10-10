@@ -3,6 +3,7 @@ import DayPicker from "./DayPicker";
 import MonthPicker from "./MonthPicker";
 import YearPicker from "./YearPicker";
 import styled from "styled-components";
+import transition from "styled-transition-group";
 
 const months = [
   "January",
@@ -46,8 +47,22 @@ const StyledSpan = styled.span`
   color: ${props => (props.active ? "#ff7494" : "#ccc")};
 `;
 
-const Dropdown = styled.div`
+const Dropdown = transition.div.attrs({
+  unmountOnExit: true,
+  timeout: 100
+})`
   border-top: 1px solid #ccc;
+  min-height: 271px;
+  &:enter { opacity: 0.01;}
+  &:enter-active {
+  opacity: 1;
+    transition: opacity 200ms ease-in-out;
+  }
+  &:exit { opacity: 1; }
+  &:exit-active {
+    opacity: 0.01;
+    transition: opacity 1ms ease-in;
+  }
 `;
 
 class DatePicker extends Component {
@@ -58,6 +73,7 @@ class DatePicker extends Component {
       showDayPicker: false,
       showMonthPicker: false,
       showYearPicker: false,
+      showDropdown: false,
       //date: today.getDate(),
       //month: today.getMonth() + 1,
       //year: today.getFullYear()
@@ -75,6 +91,7 @@ class DatePicker extends Component {
   renderDayPicker() {
     this.setState({
       showDayPicker: true,
+      showDropdown: true,
       date: "DD"
     });
   }
@@ -102,6 +119,7 @@ class DatePicker extends Component {
   onDatePicked(y) {
     console.log(y);
     this.setState({
+      showDropdown: false,
       showYearPicker: false,
       year: y
     });
@@ -112,6 +130,7 @@ class DatePicker extends Component {
       showDayPicker,
       showMonthPicker,
       showYearPicker,
+      showDropdown,
       date,
       month,
       year
@@ -125,10 +144,10 @@ class DatePicker extends Component {
             <StyledSpan active={showYearPicker}>{year}</StyledSpan>
           </Trigger>
         </TriggerWrapper>
-        <Dropdown>
+        <Dropdown in={showDropdown}>
           {showDayPicker && <DayPicker onDatePicked={this.renderMonthPicker} />}
           {showMonthPicker && (
-            <MonthPicker onMonthPicked={this.renderYearPicker} />
+            <MonthPicker date={date} onMonthPicked={this.renderYearPicker} />
           )}
           {showYearPicker && <YearPicker onYearPicked={this.onDatePicked} />}
         </Dropdown>
