@@ -4,6 +4,7 @@ import MonthPicker from "./MonthPicker";
 import YearPicker from "./YearPicker";
 import styled from "styled-components";
 import transition from "styled-transition-group";
+import { format } from "date-fns";
 
 const months = [
   "January",
@@ -30,21 +31,19 @@ const Wrapper = styled.div`
   border: 1px solid #ddd;
 `;
 
-const Trigger = styled.button`
+const TriggerInput = styled.input`
   border: none;
   font-weight: bold;
   font-size: 1em;
   cursor: pointer;
-  color: #ccc;
+  color: #555;
   width: 100%;
+  background: none;
+  text-align: center;
 `;
 
 const TriggerWrapper = styled.div`
   padding: 10px;
-`;
-
-const StyledSpan = styled.span`
-  color: ${props => (props.active ? "#ff7494" : "#ccc")};
 `;
 
 const Dropdown = transition.div.attrs({
@@ -68,61 +67,153 @@ const Dropdown = transition.div.attrs({
 class DatePicker extends Component {
   constructor(props) {
     super(props);
-    //let today = new Date();
+    const { showToday } = props;
+    let today = new Date();
+    let _date = showToday ? today.getDate() : "DD";
+    let _month = showToday ? today.getMonth() + 1 : "MM";
+    let _year = showToday ? today.getFullYear() : "YYYY";
     this.state = {
       showDayPicker: false,
       showMonthPicker: false,
       showYearPicker: false,
       showDropdown: false,
-      //date: today.getDate(),
-      //month: today.getMonth() + 1,
-      //year: today.getFullYear()
-      date: "DD",
-      month: "MM",
-      year: "YYYY"
+      date: _date,
+      month: _month,
+      year: _year,
+      formattedDate: `${_date}/${_month}/${_year}`
     };
+
+    this.dateInput = React.createRef();
+    this.monthInput = React.createRef();
+    this.yearInput = React.createRef();
 
     this.renderDayPicker = this.renderDayPicker.bind(this);
     this.renderMonthPicker = this.renderMonthPicker.bind(this);
     this.renderYearPicker = this.renderYearPicker.bind(this);
     this.onDatePicked = this.onDatePicked.bind(this);
+    this.onDateChange = this.onDateChange.bind(this);
+
+    this.focusDate = this.focusDate.bind(this);
+    this.focusMonth = this.focusMonth.bind(this);
+    this.focusYear = this.focusYear.bind(this);
+  }
+
+  focusDate() {
+    this.dateInput.current.focus();
+    this.dateInput.current.select(0, 2);
+  }
+
+  focusMonth() {
+    this.dateInput.current.focus();
+    this.dateInput.current.select(3, 2);
+  }
+
+  focusYear() {
+    this.dateInput.current.focus();
+    this.dateInput.current.select(6, 4);
   }
 
   renderDayPicker() {
     this.setState({
       showDayPicker: true,
-      showDropdown: true,
-      date: "DD"
+      showDropdown: true
     });
+    this.dateInput.current.select();
   }
 
   renderMonthPicker(d) {
-    console.log(d);
+    const _date = d.toString().padStart(2, "0");
+
     this.setState({
       showDayPicker: false,
       showMonthPicker: true,
-      date: d.toString().padStart(2, "0"),
-      month: "MM"
+      date: _date
     });
   }
 
   renderYearPicker(m) {
-    console.log(m);
+    const _month = m.toString().padStart(2, "0");
+    const { date, year } = this.state;
     this.setState({
       showMonthPicker: false,
       showYearPicker: true,
-      month: (months.indexOf(m) + 1).toString().padStart(2, "0"),
-      year: "YYYY"
+      month: _month,
+      formattedDate: `${date}/${_month}/${year}`
     });
   }
 
   onDatePicked(y) {
-    console.log(y);
+    const { date, month } = this.state;
     this.setState({
       showDropdown: false,
       showYearPicker: false,
-      year: y
+      year: y,
+      formattedDate: `${date}/${month}/${y}`
     });
+
+    /*
+
+    const locales = {
+      en: require("date-fns/locale/en"),
+      eo: require("date-fns/locale/eo"),
+      ru: require("date-fns/locale/ru"),
+      fr: require("date-fns/locale/fr")
+    };
+
+    console.log(year, month, date);
+    window.__localeId__ = "fr";
+    console.log(
+      format(new Date(2018, month, date), "DD MMMM, YYYY", {
+        locale: locales[window.__localeId__]
+      })
+    );
+    */
+  }
+
+  onDateChange(e) {
+    const _value = e.target.value;
+    console.log(_value);
+    this.setState({ formattedDate: _value });
+
+    const [_date, _month, _year] = _value.split("/");
+    const showMonth = _value.indexOf("/") >= 1;
+    const showYear = _value.lastIndexOf("/") >= 3;
+    if (showMonth) {
+      this.renderMonthPicker(_date);
+    }
+    if (showYear) {
+      this.setState({
+        showMonthPicker: false,
+        showYearPicker: true,
+        month: _month
+      });
+    } /*
+    const regex = /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/gm;
+    let m;
+    while ((m = regex.exec(_value)) !== null) {
+      if (m.index === regex.lastIndex) {
+        regex.lastIndex++;
+      }
+
+      const [_date, _month, _year] = m;
+      const { date, month, year } = this.state;
+      const isValidDate = _date >= 1 && _date <= 31 && _date !== "DD";
+      const isValidMonth = _month >= 1 && _month <= 12 && _month !== "MM";
+      const isValidYear = _year !== "YYYY";
+      if (isValidDate || _date !== date) {
+        this.renderMonthPicker(_date);
+      }
+
+      if (isValidMonth || _month !== month) {
+        this.renderYearPicker(_month);
+      }
+
+      if (isValidYear) {
+        this.setState({ showDropdown: false });
+      }
+      console.log(_date, _month, _year);
+    }
+    */
   }
 
   render() {
@@ -132,17 +223,18 @@ class DatePicker extends Component {
       showYearPicker,
       showDropdown,
       date,
-      month,
-      year
+      formattedDate
     } = this.state;
     return (
       <Wrapper>
         <TriggerWrapper>
-          <Trigger onClick={this.renderDayPicker}>
-            <StyledSpan active={showDayPicker}>{date}</StyledSpan> /&nbsp;
-            <StyledSpan active={showMonthPicker}>{month}</StyledSpan> /&nbsp;
-            <StyledSpan active={showYearPicker}>{year}</StyledSpan>
-          </Trigger>
+          <TriggerInput
+            value={formattedDate}
+            onFocus={this.renderDayPicker}
+            onChange={this.onDateChange}
+            onBlur={this.onDateChange}
+            innerRef={this.dateInput}
+          />
         </TriggerWrapper>
         <Dropdown in={showDropdown}>
           {showDayPicker && <DayPicker onDatePicked={this.renderMonthPicker} />}

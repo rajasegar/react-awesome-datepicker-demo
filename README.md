@@ -15,6 +15,15 @@ https://uxdesign.cc/rethinking-the-date-picker-ui-99b9dcb303ad
 ## Demo
 https://rajasegar.github.io/react-awesome-datepicker-demo/
 
+## Things to do
+- Publish to npm
+- I18n
+- Leap year
+- Default Options
+- Tests
+- Storybook
+- And much more...
+
 ## Credits
 Jason Ford from UX Collective
 https://uxdesign.cc/rethinking-the-date-picker-ui-99b9dcb303ad

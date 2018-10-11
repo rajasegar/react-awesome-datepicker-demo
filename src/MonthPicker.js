@@ -1,6 +1,12 @@
 import React, { Component } from "react";
 import styled from "styled-components";
 import transition from "styled-transition-group";
+import { format } from "date-fns";
+
+const locales = {
+  es: require("date-fns/locale/es"),
+  fr: require("date-fns/locale/fr")
+};
 
 const Wrapper = styled.div`
   display: grid;
@@ -14,7 +20,7 @@ const Wrapper = styled.div`
 `;
 
 const Caption = styled.p`
-  color: #ccc;
+  color: #555;
   font-size: 0.75em;
 `;
 const MonthButton = styled.button`
@@ -75,7 +81,7 @@ class DatePicker extends Component {
   }
 
   pickMonth(e) {
-    this.props.onMonthPicked(e.target.textContent);
+    this.props.onMonthPicked(e.target.dataset.month);
   }
 
   render() {
@@ -102,22 +108,30 @@ class DatePicker extends Component {
       "November"
     ];
 
-    const { onMonthPicked, date } = this.props;
+    const { date } = this.props;
     const { show } = this.state;
+    const today = new Date();
     return (
       <Transition in={show}>
         <Caption>Select month</Caption>
         <Wrapper>
-          {months.map(m => (
+          {months.map((m, index) => (
             <MonthButton
               key={m}
               onClick={this.pickMonth}
-              disabled={
+              hidden={
                 (date > 30 && monthWith30days.includes(m)) ||
                 (date === "30" && m === "February")
               }
+              data-month={index + 1}
             >
-              {m}
+              {format(
+                new Date(today.getFullYear(), months.indexOf(m), date),
+                "MMMM",
+                {
+                  locale: locales["en"]
+                }
+              )}
             </MonthButton>
           ))}
         </Wrapper>

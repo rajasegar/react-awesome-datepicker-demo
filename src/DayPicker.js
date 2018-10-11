@@ -12,7 +12,7 @@ const Wrapper = styled.div`
 `;
 
 const Caption = styled.p`
-  color: #ccc;
+  color: #555;
   font-size: 0.75em;
 `;
 const DayButton = styled.button`
@@ -47,7 +47,6 @@ class DatePicker extends Component {
   render() {
     const days = [];
     for (let i = 0; i < 31; i++) days.push(i + 1);
-    const { onDatePicked } = this.props;
     return (
       <div>
         <Caption>Select a day</Caption>
