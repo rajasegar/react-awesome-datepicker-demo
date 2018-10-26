@@ -25,7 +25,7 @@ const Caption = styled.p`
 `;
 const MonthButton = styled.button`
   background: none;
-  border: none;
+  border: ${props => (props.currentMonth ? "1px solid black" : "none")};
   cursor: pointer;
   padding: 8px;
   text-align: center;
@@ -124,6 +124,7 @@ class DatePicker extends Component {
                 (date === "30" && m === "February")
               }
               data-month={index + 1}
+              currentMonth={index === today.getMonth()}
             >
               {format(
                 new Date(today.getFullYear(), months.indexOf(m), date),

@@ -8,19 +8,20 @@ const Wrapper = styled.div`
   grid-column-gap: 5px;
   grid-row-gap: 5px;
   max-width: 250px;
-  max-height: 217px;
-  overflow-y: auto;
+  max-height: 175px;
+  overflow-y: scroll;
   margin: 0 auto;
 `;
 
 const Caption = styled.p`
   color: #555;
   font-size: 0.75em;
+  margin-bottom: 0;
 `;
 
 const YearButton = styled.button`
   background: none;
-  border: none;
+  border: ${props => (props.currentYear ? "1px solid black" : "none")};
   cursor: pointer;
   padding: 4px;
   text-align: center;
@@ -33,6 +34,13 @@ const YearButton = styled.button`
     background: #ff7494;
     color: white;
   }
+`;
+
+const Pointer = styled.button`
+  margin: 0 auto;
+  cursor: pointer;
+  border: none;
+  background: none;
 `;
 
 const Transition = transition.div.attrs({
@@ -56,11 +64,15 @@ class DatePicker extends Component {
     this.state = {
       show: false
     };
+
+    this.wrapper = React.createRef();
   }
 
   componentDidMount() {
     setTimeout(() => {
       this.setState({ show: true });
+      // need to revisit this
+      this.wrapper.current.scrollTop = 188;
     });
   }
 
@@ -71,22 +83,38 @@ class DatePicker extends Component {
 
   render() {
     let today = new Date();
-    let y = today.getFullYear();
-    let minYear = y - 50;
-    let maxYear = y + 50;
+    let currentYear = today.getFullYear();
+    let minYear = currentYear - 50;
+    let maxYear = currentYear + 50;
     const years = [];
     for (let i = minYear; i < maxYear; i++) years.push(i);
     const { show } = this.state;
     return (
       <Transition in={show}>
         <Caption>Select year</Caption>
-        <Wrapper>
+        <Pointer
+          title="Scroll Up to choose previous years"
+          onClick={() => (this.wrapper.current.scrollTop -= 21)}
+        >
+          ▲
+        </Pointer>
+        <Wrapper innerRef={this.wrapper}>
           {years.map(y => (
-            <YearButton onClick={this.pickYear} key={y}>
+            <YearButton
+              onClick={this.pickYear}
+              key={y}
+              currentYear={y === currentYear}
+            >
               {y}
             </YearButton>
           ))}
         </Wrapper>
+        <Pointer
+          title="Scroll down to choose next years"
+          onClick={() => (this.wrapper.current.scrollTop += 21)}
+        >
+          ▼
+        </Pointer>
       </Transition>
     );
   }

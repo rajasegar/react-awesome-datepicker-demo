@@ -17,7 +17,7 @@ const Caption = styled.p`
 `;
 const DayButton = styled.button`
   background: none;
-  border: none;
+  border: ${props => (props.currentDate ? "1px solid black" : "none")};
   cursor: pointer;
   padding: 4px;
   text-align: center;
@@ -46,13 +46,18 @@ class DatePicker extends Component {
 
   render() {
     const days = [];
+    const currentDate = new Date().getDate();
     for (let i = 0; i < 31; i++) days.push(i + 1);
     return (
       <div>
         <Caption>Select a day</Caption>
         <Wrapper>
           {days.map(d => (
-            <DayButton key={d} onClick={this.pickDate}>
+            <DayButton
+              key={d}
+              onClick={this.pickDate}
+              currentDate={d === currentDate}
+            >
               {d}
             </DayButton>
           ))}
