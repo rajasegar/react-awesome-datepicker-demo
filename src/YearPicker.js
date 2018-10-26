@@ -14,7 +14,7 @@ const Wrapper = styled.div`
 `;
 
 const Caption = styled.p`
-  color: #ccc;
+  color: #555;
   font-size: 0.75em;
 `;
 
@@ -76,7 +76,6 @@ class DatePicker extends Component {
     let maxYear = y + 50;
     const years = [];
     for (let i = minYear; i < maxYear; i++) years.push(i);
-    const { onYearPicked } = this.props;
     const { show } = this.state;
     return (
       <Transition in={show}>

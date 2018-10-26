@@ -4,7 +4,7 @@ import MonthPicker from "./MonthPicker";
 import YearPicker from "./YearPicker";
 import styled from "styled-components";
 import transition from "styled-transition-group";
-import { format } from "date-fns";
+//import { format } from "date-fns";
 
 const months = [
   "January",
@@ -67,20 +67,12 @@ const Dropdown = transition.div.attrs({
 class DatePicker extends Component {
   constructor(props) {
     super(props);
-    const { showToday } = props;
-    let today = new Date();
-    let _date = showToday ? today.getDate() : "DD";
-    let _month = showToday ? today.getMonth() + 1 : "MM";
-    let _year = showToday ? today.getFullYear() : "YYYY";
     this.state = {
       showDayPicker: false,
       showMonthPicker: false,
       showYearPicker: false,
       showDropdown: false,
-      date: _date,
-      month: _month,
-      year: _year,
-      formattedDate: `${_date}/${_month}/${_year}`
+      formattedDate: "DD/MM/YYYY"
     };
 
     this.dateInput = React.createRef();
@@ -93,24 +85,26 @@ class DatePicker extends Component {
     this.onDatePicked = this.onDatePicked.bind(this);
     this.onDateChange = this.onDateChange.bind(this);
 
-    this.focusDate = this.focusDate.bind(this);
-    this.focusMonth = this.focusMonth.bind(this);
-    this.focusYear = this.focusYear.bind(this);
+    this.resetDate = this.resetDate.bind(this);
   }
 
-  focusDate() {
-    this.dateInput.current.focus();
-    this.dateInput.current.select(0, 2);
+  componentDidMount() {
+    this.resetDate();
   }
 
-  focusMonth() {
-    this.dateInput.current.focus();
-    this.dateInput.current.select(3, 2);
-  }
+  resetDate() {
+    const { showToday } = this.props;
+    let today = new Date();
+    let _date = showToday ? today.getDate() : "DD";
+    let _month = showToday ? today.getMonth() + 1 : "MM";
+    let _year = showToday ? today.getFullYear() : "YYYY";
 
-  focusYear() {
-    this.dateInput.current.focus();
-    this.dateInput.current.select(6, 4);
+    this.setState({
+      date: _date,
+      month: _month,
+      year: _year,
+      formattedDate: `${_date}/${_month}/${_year}`
+    });
   }
 
   renderDayPicker() {
@@ -118,16 +112,19 @@ class DatePicker extends Component {
       showDayPicker: true,
       showDropdown: true
     });
+    //this.resetDate();
     this.dateInput.current.select();
   }
 
   renderMonthPicker(d) {
     const _date = d.toString().padStart(2, "0");
+    const { month, year } = this.state;
 
     this.setState({
       showDayPicker: false,
       showMonthPicker: true,
-      date: _date
+      date: _date,
+      formattedDate: `${_date}/${month}/${year}`
     });
   }
 
@@ -172,10 +169,12 @@ class DatePicker extends Component {
 
   onDateChange(e) {
     const _value = e.target.value;
-    console.log(_value);
-    this.setState({ formattedDate: _value });
 
     const [_date, _month, _year] = _value.split("/");
+    //console.log(_date);
+    //console.log(_month);
+    //console.log(_year);
+
     const showMonth = _value.indexOf("/") >= 1;
     const showYear = _value.lastIndexOf("/") >= 3;
     if (showMonth) {
@@ -187,33 +186,16 @@ class DatePicker extends Component {
         showYearPicker: true,
         month: _month
       });
-    } /*
-    const regex = /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/gm;
-    let m;
-    while ((m = regex.exec(_value)) !== null) {
-      if (m.index === regex.lastIndex) {
-        regex.lastIndex++;
-      }
-
-      const [_date, _month, _year] = m;
-      const { date, month, year } = this.state;
-      const isValidDate = _date >= 1 && _date <= 31 && _date !== "DD";
-      const isValidMonth = _month >= 1 && _month <= 12 && _month !== "MM";
-      const isValidYear = _year !== "YYYY";
-      if (isValidDate || _date !== date) {
-        this.renderMonthPicker(_date);
-      }
-
-      if (isValidMonth || _month !== month) {
-        this.renderYearPicker(_month);
-      }
-
-      if (isValidYear) {
-        this.setState({ showDropdown: false });
-      }
-      console.log(_date, _month, _year);
     }
-    */
+
+    if (_year && _year.length === 4) {
+      this.setState({
+        showDropdown: false,
+        showYearPicker: false
+      });
+    }
+
+    this.setState({ formattedDate: _value });
   }
 
   render() {
@@ -232,7 +214,6 @@ class DatePicker extends Component {
             value={formattedDate}
             onFocus={this.renderDayPicker}
             onChange={this.onDateChange}
-            onBlur={this.onDateChange}
             innerRef={this.dateInput}
           />
         </TriggerWrapper>
